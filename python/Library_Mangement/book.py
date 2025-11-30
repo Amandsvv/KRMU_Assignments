@@ -1,38 +1,52 @@
 # book.py
+# Author: Aman Kumar
+# Assignment 3 – Library Inventory System
 
 class Book:
-    total_books_borrowed = {}     # class-level analytics
+    borrow_count = {}   # class-level analytics
 
-    def __init__(self, book_id, title, author, available=True):
-        self.book_id = book_id
+    def __init__(self, title, author, isbn, available=True):
         self.title = title
         self.author = author
+        self.isbn = isbn
         self.available = available
 
     def borrow(self):
-        """Borrow the book if available."""
-        if not self.available:
+        try:
+            if not self.available:
+                return False
+            self.available = False
+            Book.borrow_count[self.isbn] = Book.borrow_count.get(self.isbn, 0) + 1
+            return True
+        except Exception:
             return False
-
-        self.available = False
-        
-        # Track borrow count
-        Book.total_books_borrowed[self.book_id] = (
-            Book.total_books_borrowed.get(self.book_id, 0) + 1
-        )
-        return True
 
     def return_book(self):
-        """Return a previously borrowed book."""
-        if self.available:
+        try:
+            if self.available:
+                return False
+            self.available = True
+            return True
+        except Exception:
             return False
-        self.available = True
-        return True
 
-    def to_string(self):
-        return f"{self.book_id},{self.title},{self.author},{self.available}"
+    def to_dict(self):
+        return {
+            "title": self.title,
+            "author": self.author,
+            "isbn": self.isbn,
+            "available": self.available
+        }
 
     @staticmethod
-    def from_string(line):
-        book_id, title, author, available = line.strip().split(',')
-        return Book(book_id, title, author, available == "True")
+    def from_dict(data):
+        try:
+            return Book(
+                data["title"],
+                data["author"],
+                data["isbn"],
+                data["available"]
+            )
+        except KeyError:
+            print("Error: Corrupted book record found. Skipped loading.")
+            return None

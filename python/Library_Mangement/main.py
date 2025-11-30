@@ -1,4 +1,8 @@
 # main.py
+# Author: Aman Kumar
+# Assignment 3 – OOP Library Inventory System
+
+print("Welcome to the Library Inventory System (Assignment 3)\n")
 
 from library import Library
 from book import Book
@@ -7,54 +11,66 @@ from member import Member
 lib = Library()
 
 while True:
-    print("\n--- Library Menu ---")
-    print("1. Add Book")
-    print("2. Add Member")
-    print("3. Borrow Book")
-    print("4. Return Book")
-    print("5. Most Borrowed Book")
-    print("6. Exit")
+    try:
+        print("\n1. Add Book")
+        print("2. Register Member")
+        print("3. Borrow Book")
+        print("4. Return Book")
+        print("5. View Library Report")
+        print("6. Exit")
 
-    choice = input("Enter choice: ")
+        choice = input("Enter choice: ")
 
-    if choice == "1":
-        id = input("Book ID: ")
-        title = input("Title: ")
-        author = input("Author: ")
-        lib.add_book(Book(id, title, author))
-        print("Book added!")
+        if choice == "1":
+            try:
+                title = input("Title: ")
+                author = input("Author: ")
+                isbn = input("ISBN: ")
+                lib.add_book(Book(title, author, isbn))
+                print("Book Added Successfully!")
+            except Exception:
+                print("Error adding book.")
 
-    elif choice == "2":
-        id = input("Member ID: ")
-        name = input("Name: ")
-        lib.add_member(Member(id, name))
-        print("Member added!")
+        elif choice == "2":
+            try:
+                name = input("Member Name: ")
+                member_id = input("Member ID: ")
+                lib.register_member(Member(name, member_id))
+                print("Member Registered!")
+            except Exception:
+                print("Error registering member.")
 
-    elif choice == "3":
-        mid = input("Member ID: ")
-        bid = input("Book ID: ")
-        if lib.borrow_book(mid, bid):
-            print("Book borrowed!")
+        elif choice == "3":
+            try:
+                member_id = input("Member ID: ")
+                isbn = input("Book ISBN: ")
+                if lib.lend_book(member_id, isbn):
+                    print("Book Borrowed!")
+                else:
+                    print("Borrowing Failed!")
+            except Exception:
+                print("Error processing borrow request.")
+
+        elif choice == "4":
+            try:
+                member_id = input("Member ID: ")
+                isbn = input("Book ISBN: ")
+                if lib.take_return(member_id, isbn):
+                    print("Book Returned!")
+                else:
+                    print("Return Failed!")
+            except Exception:
+                print("Error processing return request.")
+
+        elif choice == "5":
+            print(lib.analytics_report())
+
+        elif choice == "6":
+            print("Exiting Program...")
+            break
+
         else:
-            print("Borrowing failed.")
+            print("Invalid Option! Try again.")
 
-    elif choice == "4":
-        mid = input("Member ID: ")
-        bid = input("Book ID: ")
-        if lib.return_book(mid, bid):
-            print("Book returned!")
-        else:
-            print("Return failed.")
-
-    elif choice == "5":
-        book = lib.most_borrowed_book()
-        if book:
-            print(f"Most Borrowed: {book.title} by {book.author}")
-        else:
-            print("No books borrowed yet.")
-
-    elif choice == "6":
-        break
-
-    else:
-        print("Invalid choice!")
+    except Exception:
+        print("Unexpected error occurred at menu.")

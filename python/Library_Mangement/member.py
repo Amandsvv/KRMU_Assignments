@@ -1,30 +1,51 @@
 # member.py
+# Assignment 3
 
 class Member:
-    def __init__(self, member_id, name, borrowed_books=None):
-        self.member_id = member_id
+    def __init__(self, name, member_id, borrowed_books=None):
         self.name = name
-        self.borrowed_books = borrowed_books or []
+        self.member_id = member_id
+        self.borrowed_books = borrowed_books if borrowed_books else []
 
     def borrow_book(self, book):
-        if book.borrow():
-            self.borrowed_books.append(book.book_id)
-            return True
-        return False
+        try:
+            if book.borrow():
+                self.borrowed_books.append(book.isbn)
+                return True
+            return False
+        except Exception:
+            return False
 
     def return_book(self, book):
-        if book.book_id in self.borrowed_books and book.return_book():
-            self.borrowed_books.remove(book.book_id)
-            return True
-        return False
+        try:
+            if book.isbn in self.borrowed_books and book.return_book():
+                self.borrowed_books.remove(book.isbn)
+                return True
+            return False
+        except Exception:
+            return False
 
-    def to_string(self):
-        books = "|".join(self.borrowed_books)
-        return f"{self.member_id},{self.name},{books}"
+    def list_books(self):
+        try:
+            return self.borrowed_books
+        except Exception:
+            return []
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "member_id": self.member_id,
+            "borrowed_books": self.borrowed_books
+        }
 
     @staticmethod
-    def from_string(line):
-        parts = line.strip().split(',')
-        member_id, name = parts[:2]
-        borrowed = parts[2].split('|') if parts[2] else []
-        return Member(member_id, name, borrowed)
+    def from_dict(data):
+        try:
+            return Member(
+                data["name"],
+                data["member_id"],
+                data["borrowed_books"]
+            )
+        except KeyError:
+            print("Error: Corrupted member record found. Skipped loading.")
+            return None
